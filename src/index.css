@@ -1,0 +1,110 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+.testimonials-section {
+  /* padding: 40px; */
+  background-color: whitesmoke;
+  height: auto;
+  width: 90%;
+  padding: 0; /* Remove any padding */
+  margin-left: 30px;
+  margin-right: 10px;
+}
+
+.testimonial-card {
+  display: flex;
+  width: 100%;
+  align-items: center; /* Centers the content vertically */
+  justify-content: space-between; /* Space between image and text */
+  padding: 10px;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  height: auto; /* Ensures the height adjusts based on content */
+  box-sizing: border-box;
+  /* Prevents padding from affecting layout */
+}
+
+.testimonial-image {
+  height: 200px; /* Fixed height for image */
+  width: auto; /* Automatically adjust width to maintain aspect ratio */
+  object-fit: cover; /* Ensures image maintains aspect ratio and fills the height */
+  border-radius: 10px;
+  margin-left: 20px; /* Space between text and image */
+}
+
+.testimonial-content {
+  max-width: 60%; /* Limits text content width */
+  text-align: left;
+}
+
+.testimonial-text {
+  font-style: italic;
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.testimonial-name {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.testimonials-section {
+  padding: 40px;
+  /* background-color: #f4f4f4; */
+  height: auto; /* Ensures no extra height is applied */
+}
+
+.testimonial-slider .slick-slide {
+  padding: 0 10px; /* Adds space between slider items */
+}
+
+.slick-slide img {
+  /* display: block; Ensures no whitespace below images */
+  width: 20%;
+  border-radius: 50px; /* Makes sure image fills the slide container */
+}
+
+.slick-track {
+  display: flex; /* Ensures all slides are aligned correctly */
+  align-items: center; /* Aligns slides vertically */
+}
+@media (max-width: 768px) {
+  .testimonial-card {
+    flex-direction: column; /* Stack the image and text vertically */
+    align-items: center; /* Center the content horizontally */
+    justify-content: center; /* Ensure the card content is centered vertically */
+    padding: 15px; /* Adjust padding for better spacing on mobile */
+  }
+
+  .testimonial-image {
+    height: 50px; /* Set image height */
+    width: 50px; /* Set image width */
+    border-radius: 50%; /* Circular image */
+    margin-bottom: 10px; /* Add some space below the image */
+  }
+
+  .testimonial-content {
+    max-width: 100%; /* Allow text to take up full width */
+    text-align: center; /* Center text on mobile */
+  }
+  .testimonials-section {
+    /* padding: 40px; */
+    background-color: whitesmoke;
+    height: auto;
+    width: 70%;
+    /* Remove any padding */
+    margin-left: 20px;
+    margin-right: 10px;
+  }
+}
