@@ -7,6 +7,8 @@ import {
   Grid,
   Paper,
   CircularProgress,
+  Card,
+  CardContent,
 } from "@mui/material";
 import { motion } from "framer-motion";
 import axios from "axios";
@@ -22,6 +24,7 @@ const ProfilePage = () => {
     phoneNumber: "",
     email: "",
   });
+  const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -35,30 +38,38 @@ const ProfilePage = () => {
     navigate("/login");
   }
 
-  // Example API endpoints (replace :id with userId dynamically)
-  const apiUrl = `https://safety-backend.vercel.app/api/users/${userId}`;
+  const userApiUrl = `https://safety-backend.vercel.app/api/users/${userId}`;
+  const appointmentsApiUrl = `https://safety-backend.vercel.app/api/appointments/user/${userId}`;
   const updateUrl = `https://safety-backend.vercel.app/api/users/${userId}`;
 
-  // Fetch user data on component mount
+  // Fetch user data and appointments on component mount
   useEffect(() => {
     const fetchUserData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(apiUrl, {
+        const userResponse = await axios.get(userApiUrl, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
         });
-        setUserData(response.data);
+        setUserData(userResponse.data);
+
+        // Fetch appointments for the user
+        const appointmentResponse = await axios.get(appointmentsApiUrl, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        });
+        setAppointments(appointmentResponse.data);
       } catch (err) {
-        setError("Failed to fetch user data.");
+        setError("Failed to fetch user data or appointments.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchUserData();
-  }, [apiUrl]);
+  }, [userApiUrl, appointmentsApiUrl]);
 
   // Handle input change
   const handleChange = (e) => {
@@ -71,7 +82,6 @@ const ProfilePage = () => {
 
     // Validate on change
     if (name === "phoneNumber") {
-      // Check if phone number has 10 digits
       const phoneValid = /^\d{10}$/.test(value);
       setFormErrors((prevErrors) => ({
         ...prevErrors,
@@ -80,7 +90,6 @@ const ProfilePage = () => {
     }
 
     if (name === "email") {
-      // Check if email contains @gmail.com
       const emailValid = /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(value);
       setFormErrors((prevErrors) => ({
         ...prevErrors,
@@ -91,7 +100,6 @@ const ProfilePage = () => {
 
   // Save changes
   const saveChanges = async () => {
-    // Check if there are any validation errors before saving
     if (formErrors.phoneNumber || formErrors.email) {
       toast.error("Please fix the errors before submitting.");
       return;
@@ -115,16 +123,19 @@ const ProfilePage = () => {
   };
 
   return (
-    <Box sx={{ py: 5, px: "8%" }}>
-      {/* Profile Banner */}
+    <Box>
+      {/* Toast Container */}
+      <ToastContainer />
+
+      {/* Banner Section with Parallax Effect */}
       <Box
         sx={{
-          height: { xs: "200px", sm: "250px", md: "300px" },
+          height: { xs: "200px", md: "300px" },
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          transform: "translateZ(0)",
           position: "relative",
-          overflow: "hidden",
         }}
         component={motion.div}
         initial={{ opacity: 0 }}
@@ -133,7 +144,7 @@ const ProfilePage = () => {
       >
         <img
           src={Banner}
-          alt="News Background"
+          alt="Causes Background"
           style={{
             width: "100%",
             height: "100%",
@@ -156,112 +167,149 @@ const ProfilePage = () => {
         </Typography>
       </Box>
 
-      {/* Profile Form */}
+      {/* User Profile and Appointments Section */}
       <Box
         sx={{
-          mt: 4,
           display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
+          flexDirection: { xs: "column", md: "row" },
+          gap: 4,
+          px: { xs: 2, md: 8 },
+          py: 4,
         }}
-        component={motion.div}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
       >
-        <Paper sx={{ p: 3, width: "100%", maxWidth: "600px", boxShadow: 3 }}>
-          <Typography variant="h6" align="center" sx={{ fontWeight: "bold" }}>
-            Update Your Details
+        {/* Left Column (User Profile Form) */}
+        <Box
+          sx={{
+            flex: 1,
+            p: 4,
+            borderRadius: 2,
+            boxShadow: 3,
+            backgroundColor: "#f9f9f9",
+            display: "flex",
+            flexDirection: "column",
+            gap: 3,
+          }}
+          component={motion.div}
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: "bold", mb: 3 }}
+            component={motion.div}
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.3 }}
+          >
+            Update Profile
           </Typography>
+          <TextField
+            label="First Name"
+            name="FirstName"
+            value={userData.FirstName}
+            onChange={handleChange}
+            variant="outlined"
+            fullWidth
+            sx={{ borderRadius: 2, mb: 2 }}
+          />
+          <TextField
+            label="Last Name"
+            name="LastName"
+            value={userData.LastName}
+            onChange={handleChange}
+            variant="outlined"
+            fullWidth
+            sx={{ borderRadius: 2, mb: 2 }}
+          />
+          <TextField
+            label="Phone Number"
+            name="phoneNumber"
+            value={userData.phoneNumber}
+            onChange={handleChange}
+            variant="outlined"
+            fullWidth
+            error={Boolean(formErrors.phoneNumber)}
+            helperText={formErrors.phoneNumber}
+            sx={{ borderRadius: 2, mb: 2 }}
+          />
+          <TextField
+            label="Email"
+            name="email"
+            value={userData.email}
+            onChange={handleChange}
+            variant="outlined"
+            fullWidth
+            error={Boolean(formErrors.email)}
+            helperText={formErrors.email}
+            sx={{ borderRadius: 2, mb: 2 }}
+          />
+          <Button
+            variant="contained"
+            color="error"
+            sx={{
+              px: 3,
+              py: 1,
+              borderRadius: 30,
+              textTransform: "none",
+              backgroundColor: "#81C784",
+              "&:hover": { backgroundColor: "#66BB6A" },
+            }}
+            onClick={saveChanges}
+          >
+            Save Changes
+          </Button>
+        </Box>
 
+        {/* Right Column (Appointments) */}
+        <Box
+          sx={{
+            flex: 1,
+            p: 4,
+            borderRadius: 2,
+            boxShadow: 3,
+            backgroundColor: "#f9f9f9",
+            display: "flex",
+            flexDirection: "column",
+            gap: 3,
+          }}
+        >
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: "bold", mb: 3 }}
+            component={motion.div}
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.3 }}
+          >
+            Appointments
+          </Typography>
           {loading ? (
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-              {/* <CircularProgress /> */}
-            </Box>
+            <CircularProgress />
           ) : error ? (
-            <Typography color="error" align="center">
-              {error}
-            </Typography>
+            <Typography color="error">{error}</Typography>
           ) : (
-            <>
-              <Grid container spacing={3} sx={{ mt: 2 }}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="FirstName"
-                    variant="outlined"
-                    name="FirstName"
-                    value={userData.FirstName}
-                    onChange={handleChange}
-                    sx={{ boxShadow: 2 }}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="LastName"
-                    variant="outlined"
-                    name="LastName"
-                    value={userData.LastName}
-                    onChange={handleChange}
-                    sx={{ boxShadow: 2 }}
-                  />
-                </Grid>
-              </Grid>
+            appointments.map((appointment, index) => (
+              <Card key={index} sx={{ mb: 2 }}>
+                <CardContent>
+                  <Typography variant="h6">{appointment.courseType}</Typography>
+                  <Typography variant="body2">
+                    <b>Date : </b>
+                    {new Date(appointment.date).toLocaleDateString()}
+                  </Typography>
 
-              <Grid container spacing={3} sx={{ mt: 2 }}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Phone Number"
-                    variant="outlined"
-                    name="phoneNumber"
-                    value={userData.phoneNumber}
-                    onChange={handleChange}
-                    sx={{ boxShadow: 2 }}
-                    error={!!formErrors.phoneNumber}
-                    helperText={formErrors.phoneNumber}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Email"
-                    variant="outlined"
-                    name="email"
-                    type="email"
-                    value={userData.email}
-                    onChange={handleChange}
-                    sx={{ boxShadow: 2 }}
-                    error={!!formErrors.email}
-                    helperText={formErrors.email}
-                  />
-                </Grid>
-              </Grid>
-
-              <Box sx={{ mt: 3, display: "flex", justifyContent: "center" }}>
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: "#81C784",
-                    boxShadow: 3,
-                    "&:hover": { backgroundColor: "#66BB6A" },
-                  }}
-                  onClick={saveChanges}
-                  disabled={
-                    loading || formErrors.phoneNumber || formErrors.email
-                  }
-                >
-                  {loading ? "Saving..." : "Save Changes"}
-                </Button>
-              </Box>
-            </>
+                  <Typography variant="body2">
+                    <b>Time : </b>
+                    {appointment.time}
+                  </Typography>
+                  <Typography variant="body2">
+                    <b>Status : </b>
+                    {appointment.status}
+                  </Typography>
+                </CardContent>
+              </Card>
+            ))
           )}
-        </Paper>
+        </Box>
       </Box>
-
-      {/* Toast Container for Success/Error */}
-      <ToastContainer />
     </Box>
   );
 };
