@@ -69,10 +69,10 @@ const Home = () => {
     <>
       <Box>
         {/* Hero Section */}
+
         <HeroBanner />
         <br></br>
-        <br></br>
-        <br></br>
+
         <JagoHero />
 
         <Container sx={{ my: 4 }}>

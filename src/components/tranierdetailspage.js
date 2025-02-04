@@ -170,7 +170,7 @@ const TrainerDetailsPage = () => {
   }
 
   return (
-    <Box sx={{ py: 5, px: "8%" }}>
+    <Box sx={{ py: 4, px: "3%" }}>
       <ToastContainer />
       <Grid
         container
@@ -361,11 +361,21 @@ const TrainerDetailsPage = () => {
             variant="outlined"
             sx={{ mb: 2 }}
             value={formData.date}
-            onChange={handleInputChange}
+            onChange={(e) => {
+              const enteredDate = e.target.value;
+              const isValidDate = new Date(enteredDate) >= new Date(todayDate);
+
+              // Only allow the input change if the entered date is today or in the future
+              if (isValidDate || enteredDate === "") {
+                handleInputChange(e);
+              }
+            }}
             required
-            InputLabelProps={{ shrink: true }}
+            InputLabelProps={{
+              shrink: true,
+            }}
             inputProps={{
-              min: todayDate, // Prevent past dates
+              min: todayDate, // Only allow present and future dates
             }}
           />
           <TextField

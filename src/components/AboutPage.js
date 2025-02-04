@@ -535,7 +535,16 @@ const AboutPage = () => {
               variant="outlined"
               sx={{ mb: 2 }}
               value={formData.date}
-              onChange={handleInputChange}
+              onChange={(e) => {
+                const enteredDate = e.target.value;
+                const isValidDate =
+                  new Date(enteredDate) >= new Date(todayDate);
+
+                // Only allow the input change if the entered date is today or in the future
+                if (isValidDate || enteredDate === "") {
+                  handleInputChange(e);
+                }
+              }}
               required
               InputLabelProps={{
                 shrink: true,
@@ -544,6 +553,7 @@ const AboutPage = () => {
                 min: todayDate, // Only allow present and future dates
               }}
             />
+
             <TextField
               label="Time"
               name="time"
